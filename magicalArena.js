@@ -1,5 +1,5 @@
-// Defines a Player class with health, strength, and attack attributes
-class Player {
+// Defines a Gladiator class with health, strength, and attack attributes
+class Gladiator {
     constructor(health, strength, attack) {
         this.health = health;
         this.strength = strength;
@@ -26,30 +26,30 @@ class Player {
         return this.strength * roll;
     }
 
-    // Reduces the health of player by specified amount
+    // Reduces the health of gladiator by specified amount
     takeDamage(damage) {
         this.health -= damage;
     }
 }
 
-// Defines a Match class that states match between two players
-class Match {
-    constructor(player1, player2) {
-        this.player1 = player1;
-        this.player2 = player2;
-        this.currentPlayer = this.player1.health < this.player2.health ? this.player1 : this.player2;
+// Defines a Battle class that states match between two gladiators
+class Battle {
+    constructor(gladiator1, gladiator2) {
+        this.gladiator1 = gladiator1;
+        this.gladiator2 = gladiator2;
+        this.currentGladiator = this.gladiator1.health < this.gladiator2.health ? this.gladiator1 : this.gladiator2;
         this.winner = null;
     }
 
-    // Rolls  die and returns the result
+    // Rolls die and returns the result
     rollDice() {
         return Math.floor(Math.random() * 6) + 1;
     }
 
     // Plays a turn of the match
     playTurn() {
-        const attacker = this.currentPlayer;
-        const defender = attacker === this.player1 ? this.player2 : this.player1;
+        const attacker = this.currentGladiator;
+        const defender = attacker === this.gladiator1 ? this.gladiator2 : this.gladiator1;
 
         // Rolls dice and calculates damage and defense strength
         const attackRoll = attacker.rollAttackDice();
@@ -57,15 +57,15 @@ class Match {
         const attackDamage = attacker.calculateDamage(attackRoll);
         const defenseStrength = defender.calculateDefense(defenseRoll);
 
-        // Reduces defenders health by damage dealt
+        // Reduces defender's health by damage dealt
         const damageDealt = Math.max(0, attackDamage - defenseStrength);
         defender.takeDamage(damageDealt);
 
-        // Checks if game is over and give the winner
+        // Checks if game is over and sets the winner
         if (defender.health <= 0) {
             this.winner = attacker;
         } else {
-            this.currentPlayer = defender;
+            this.currentGladiator = defender;
         }
     }
 
@@ -75,39 +75,38 @@ class Match {
     }
 }
 
-// Defines Magical Arena class that manages matches b/w players
-class MagicalArena {
+// Defines Arena class that manages matches b/w gladiators
+class Arena {
     constructor() {
-        this.players = [];
-        this.matches = [];
+        this.gladiators = [];
+        this.battles = [];
     }
 
-    // Adding a player to arena
-    addPlayer(player) {
-        this.players.push(player);
+    // Adding a gladiator to arena
+    addGladiator(gladiator) {
+        this.gladiators.push(gladiator);
     }
 
-    // Starts a match b/w two players
-    startMatch(player1Index, player2Index) {
-        const player1 = this.players[player1Index];
-        const player2 = this.players[player2Index];
-        const match = new Match(player1, player2);
-        this.matches.push(match);
+    // Starts a battle b/w two gladiators
+    startBattle(gladiator1Index, gladiator2Index) {
+        const gladiator1 = this.gladiators[gladiator1Index];
+        const gladiator2 = this.gladiators[gladiator2Index];
+        const battle = new Battle(gladiator1, gladiator2);
+        this.battles.push(battle);
 
         // Plays turns until the match is over
-        while (!match.isGameOver()) {
-            match.playTurn();
+        while (!battle.isGameOver()) {
+            battle.playTurn();
         }
 
         // Logs the winner of match
-        console.log(`Winner: Player ${match.winner === player1 ? 1 : 2}`);
+        console.log(`Winner: Gladiator ${battle.winner === gladiator1 ? 1 : 2}`);
     }
 }
 
-
-const arena = new MagicalArena();
-const playerA = new Player(50, 5, 10);
-const playerB = new Player(100, 10, 5);
-arena.addPlayer(playerA);
-arena.addPlayer(playerB);
-arena.startMatch(0, 1);
+const arena = new Arena();
+const gladiatorA = new Gladiator(50, 5, 10);
+const gladiatorB = new Gladiator(100, 10, 5);
+arena.addGladiator(gladiatorA);
+arena.addGladiator(gladiatorB);
+arena.startBattle(0, 1);
